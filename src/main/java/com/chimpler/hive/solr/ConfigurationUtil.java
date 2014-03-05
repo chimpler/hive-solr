@@ -5,6 +5,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.mapred.JobConf;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -33,6 +34,15 @@ public class ConfigurationUtil {
 	public final static int getNumOutputBufferRows(Configuration conf) {
 		String value = conf.get(BUFFER_OUT_ROWS, "-1");
 		return Integer.parseInt(value);
+	}
+	
+	public static void copySolrProperties(Properties from, JobConf to) {
+    	for (String key : ALL_PROPERTIES) {
+            String value = from.getProperty(key);
+            if (value != null) {
+            	to.set(key, value);
+            }
+    	}
 	}
 
     public static void copySolrProperties(Properties from,

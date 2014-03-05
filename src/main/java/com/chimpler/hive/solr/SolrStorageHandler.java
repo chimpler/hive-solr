@@ -30,8 +30,7 @@ public class SolrStorageHandler implements HiveStorageHandler {
 	}
 
 	@Override
-	public void configureTableJobProperties(TableDesc tableDesc,
-			Map<String, String> jobProperties) {
+	public void configureTableJobProperties(TableDesc tableDesc, Map<String, String> jobProperties) {
 		Properties properties = tableDesc.getProperties();
 		ConfigurationUtil.copySolrProperties(properties, jobProperties);
 	}
@@ -116,20 +115,21 @@ public class SolrStorageHandler implements HiveStorageHandler {
 	}
 
 	@Override
-	public void configureInputJobProperties(TableDesc arg0,
-			Map<String, String> arg1) {
-		// do nothing by default
+	public void configureInputJobProperties(TableDesc tableDescription, Map<String, String> jobProperties) {
+		Properties properties = tableDescription.getProperties();
+		ConfigurationUtil.copySolrProperties(properties, jobProperties);
 	}
 
 	@Override
-	public void configureJobConf(TableDesc arg0, JobConf arg1) {
-		// do nothing by default
+	public void configureJobConf(TableDesc tableDescription, JobConf config) {
+		Properties properties = tableDescription.getProperties();
+		ConfigurationUtil.copySolrProperties(properties, config);
 	}
 
 	@Override
-	public void configureOutputJobProperties(TableDesc arg0,
-			Map<String, String> arg1) {
-		// do nothing by default
+	public void configureOutputJobProperties(TableDesc tableDescription, Map<String, String> jobProperties) {
+		Properties properties = tableDescription.getProperties();
+		ConfigurationUtil.copySolrProperties(properties, jobProperties);
 	}
 
 	@Override
