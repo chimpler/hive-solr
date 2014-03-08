@@ -2,13 +2,13 @@ package com.chimpler.hive.solr;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.hive.ql.exec.Utilities;
 import org.apache.hadoop.hive.ql.io.HiveInputFormat;
 import org.apache.hadoop.hive.ql.plan.ExprNodeDesc;
 import org.apache.hadoop.hive.ql.plan.TableScanDesc;
-import org.apache.hadoop.hive.serde2.ColumnProjectionUtils;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.mapred.InputSplit;
@@ -18,11 +18,36 @@ import org.apache.hadoop.mapred.Reporter;
 
 public class SolrInputFormat extends
                 HiveInputFormat<LongWritable, MapWritable> {
+
+  public static final String READ_COLUMN_IDS_CONF_STR = "hive.io.file.readcolumn.ids";
+  public static final String READ_COLUMN_NAMES_CONF_STR = "hive.io.file.readcolumn.names";
+  private static final String READ_COLUMN_IDS_CONF_STR_DEFAULT = "";
+  private static final String READ_ALL_COLUMNS = "hive.io.file.read.all.columns";
+  private static final boolean READ_ALL_COLUMNS_DEFAULT = true;
+			
+  /**
+   * Returns an array of column ids(start from zero) which is set in the given
+   * parameter <tt>conf</tt>.
+   */
+  public static List<Integer> getReadColumnIDs(JobConf conf) {
+    String skips = conf.get(READ_COLUMN_IDS_CONF_STR, READ_COLUMN_IDS_CONF_STR_DEFAULT);
+    String[] list = skips.split(",");
+    List<Integer> result = new ArrayList<Integer>(list.length);
+    for (String element : list) {
+      // it may contain duplicates, remove duplicates
+      Integer toAdd = Integer.parseInt(element);
+      if (!result.contains(toAdd)) {
+        result.add(toAdd);
+      }
+    }
+    return result;
+  }
+			
     @Override
     public RecordReader<LongWritable, MapWritable> getRecordReader(
                     InputSplit split, JobConf conf, Reporter reporter)
                     throws IOException {
-            List<Integer> readColIDs = ColumnProjectionUtils.getReadColumnIDs(conf);
+            List<Integer> readColIDs = getReadColumnIDs(conf);
 
             boolean addAll = (readColIDs.size() == 0);
 
